@@ -1,4 +1,4 @@
-# ── IAM Role for CodeBuild ──────────────────────────────────────────────────────
+# IAM Role for CodeBuild
 resource "aws_iam_role" "codebuild" {
   name = "terraform-drift-codebuild"
 
@@ -49,6 +49,14 @@ resource "aws_iam_role_policy" "codebuild" {
         ]
         Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
       },
+    {
+        # Publish drift alerts to SNS
+        Effect = "Allow"
+        Action = [
+          "sns:Publish",
+        ]
+        Resource = aws_sns_topic.drift.arn
+      },
     ]
   })
 }
@@ -80,6 +88,17 @@ resource "aws_codebuild_project" "drift" {
       group_name = "/codebuild/terraform-drift"
     }
   }
+}
+
+#SNS topic 
+resource "aws_sns_topic" "drift" {
+  name = "terraform-drift-alerts"
+}
+
+resource "aws_sns_topic_subscription" "drift" {
+  topic_arn = aws_sns_topic.drift.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
 }
 
 
