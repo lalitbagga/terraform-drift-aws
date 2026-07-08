@@ -14,7 +14,7 @@ phases:
     commands:
       - cd /tmp/Three-Tier-Infra
       - EXIT_CODE=0
-      - terraform plan -detailed-exitcode -out=plan.tfplan || EXIT_CODE=$?
+      - terraform plan -detailed-exitcode -out=plan.tfplan -lock=false || EXIT_CODE=$?
       - |
         if [ "$EXIT_CODE" -eq 2 ]; then
           echo "Drift detected. Publishing details to SNS."
