@@ -41,6 +41,14 @@ resource "aws_iam_role_policy" "codebuild" {
         ]
         Resource = "arn:aws:logs:${var.aws_region}:*:*"
       },
+      {
+        # Read SSM parameters (for SSH keys, etc.)
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter",
+        ]
+        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
+      },
     ]
   })
 }
