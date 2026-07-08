@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # install terraform
+      - yum install -y yum-utils
+      - yum-config-manager --add-repo https://rpm.releases.hashiccorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform
+  pre_build:
+    commands:
+      - git clone https://github.com/lalitbagga/Three-Tier-Infra.git
+      - cd Three-Tier-Infra
+      - terraform init
+  build:
+    commands:
+      - cd Three-Tier-Infra
+      - EXIT_CODE=0
+      - terraform plan -detailed-exitcode -out=plan.tfplan || EXIT_CODE=$?
+      - |
+        if [ "$EXIT_CODE" -eq 2 ]; then
+          echo "Drift detected. Publishing details to SNS."
+          # Add your SNS publishing command here
+        elif [ "$EXIT_CODE" -eq 1 ]; then
+          echo "Error during terraform plan."
+          exit 1
+        else
+          echo "No drift detected."
+        fi
+  post_build:
+    commands:
+      # if exit code 2 → publish drift details to SNS
