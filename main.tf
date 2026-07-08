@@ -45,4 +45,33 @@ resource "aws_iam_role_policy" "codebuild" {
   })
 }
 
+# CodeBuild Project 
+resource "aws_codebuild_project" "drift" {
+  name          = "terraform-drift"
+  description   = "Runs terraform plan against Three-Tier-Infra to detect drift"
+  build_timeout = 10
+  service_role  = aws_iam_role.codebuild.arn
+
+  artifacts {
+    type = "NO_ARTIFACTS"
+  }
+
+  environment {
+    compute_type = "BUILD_GENERAL1_SMALL"
+    image        = "aws/codebuild/standard:7.0"
+    type         = "LINUX_CONTAINER"
+  }
+
+  source {
+    type      = "NO_SOURCE"
+    buildspec = file("${path.module}/buildspec.yml")
+  }
+
+  logs_config {
+    cloudwatch_logs {
+      group_name = "/codebuild/terraform-drift"
+    }
+  }
+}
+
 
