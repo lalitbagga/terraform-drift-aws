@@ -18,7 +18,7 @@ phases:
       - |
         if [ "$EXIT_CODE" -eq 2 ]; then
           echo "Drift detected. Publishing details to SNS."
-          # Add your SNS publishing command here
+          aws sns publish --topic-arn "$SNS_TOPIC_ARN" --subject "Terraform Drift Detected" --message "Drift found in Three-Tier-Infra"
         elif [ "$EXIT_CODE" -eq 1 ]; then
           echo "Error during terraform plan."
           exit 1

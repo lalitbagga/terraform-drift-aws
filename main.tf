@@ -1,3 +1,4 @@
+
 # IAM Role for CodeBuild
 resource "aws_iam_role" "codebuild" {
   name = "terraform-drift-codebuild"
@@ -76,7 +77,14 @@ resource "aws_codebuild_project" "drift" {
     compute_type = "BUILD_GENERAL1_SMALL"
     image        = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
     type         = "LINUX_CONTAINER"
+
+    environment_variable {         
+        name  = "SNS_TOPIC_ARN"
+        value = aws_sns_topic.drift.arn
+    }
   }
+
+ 
 
   source {
     type      = "NO_SOURCE"
