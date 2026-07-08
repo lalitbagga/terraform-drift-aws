@@ -7,12 +7,12 @@ phases:
       - unzip terraform.zip -d /usr/local/bin
   pre_build:
     commands:
-      - git clone https://github.com/lalitbagga/Three-Tier-Infra.git
-      - cd Three-Tier-Infra
+      - git clone https://github.com/lalitbagga/Three-Tier-Infra.git /tmp/Three-Tier-Infra
+      - cd /tmp/Three-Tier-Infra
       - terraform init
   build:
     commands:
-      - cd Three-Tier-Infra
+      - cd /tmp/Three-Tier-Infra
       - EXIT_CODE=0
       - terraform plan -detailed-exitcode -out=plan.tfplan || EXIT_CODE=$?
       - |
