@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.9.0/terraform_1.9.0_linux_amd64.zip
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.10.0/terraform_1.10.0_linux_amd64.zip
       - unzip terraform.zip -d /usr/local/bin
   pre_build:
     commands:
