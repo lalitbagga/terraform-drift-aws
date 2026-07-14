@@ -17,8 +17,38 @@ phases:
       - terraform plan -detailed-exitcode -out=plan.tfplan -lock=false || EXIT_CODE=$?
       - |
         if [ "$EXIT_CODE" -eq 2 ]; then
-          echo "Drift detected. Publishing details to SNS."
-          aws sns publish --topic-arn "$SNS_TOPIC_ARN" --subject "Terraform Drift Detected" --message "Drift found in Three-Tier-Infra"
+          echo "Drift detected. Extracting details..."
+
+          # Get plan details as JSON
+          terraform show -json plan.tfplan > /tmp/plan.json
+
+          # Extract resource changes with actual modifications
+          DRIFT_CHANGES=$(jq -c '[
+            .resource_changes[] |
+            select(.change.actions != ["no-op"]) |
+            {
+              address: .address,
+              type: .type,
+              actions: .change.actions
+            }
+          ]' /tmp/plan.json)
+
+          # Build the message as JSON
+          MESSAGE=$(jq -n \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg project "Three-Tier-Infra" \
+            --argjson changes "$DRIFT_CHANGES" \
+            '{
+              timestamp: $timestamp,
+              project: $project,
+              drift_count: ($changes | length),
+              changes: $changes
+            }')
+
+          echo "Publishing drift details to SNS..."
+          aws sns publish --topic-arn "$SNS_TOPIC_ARN" \
+            --subject "Terraform Drift Detected" \
+            --message "$MESSAGE"
         elif [ "$EXIT_CODE" -eq 1 ]; then
           echo "Error during terraform plan."
           exit 1
