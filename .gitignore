@@ -6,6 +6,7 @@
 .terraform.lock.hcl
 crash.log
 crash.*.log
+lambda/*.zip
 
 # tfvars contains secrets — never commit
 *.tfvars
