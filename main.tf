@@ -139,3 +139,67 @@ resource "aws_sqs_queue_policy" "drift_audit" {
   })
 }
 
+# ── Severity Classifier Lambda ─────────────────────────────────────────────────
+resource "aws_iam_role" "lambda" {
+  name = "terraform-drift-severity-lambda"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "lambda" {
+  name = "terraform-drift-severity-lambda"
+  role = aws_iam_role.lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Resource = "arn:aws:logs:${var.aws_region}:*:*"
+      },
+    ]
+  })
+}
+
+data "archive_file" "severity_lambda" {
+  type        = "zip"
+  source_file = "${path.module}/lambda/severity_classifier.py"
+  output_path = "${path.module}/lambda/severity_classifier.zip"
+}
+
+resource "aws_lambda_function" "severity" {
+  function_name = "terraform-drift-severity"
+  filename      = data.archive_file.severity_lambda.output_path
+  handler       = "severity_classifier.lambda_handler"
+  runtime       = "python3.12"
+  role          = aws_iam_role.lambda.arn
+  timeout       = 30
+
+  source_code_hash = data.archive_file.severity_lambda.output_base64sha256
+}
+
+resource "aws_sns_topic_subscription" "lambda" {
+  topic_arn = aws_sns_topic.drift.arn
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.severity.arn
+}
+
+resource "aws_lambda_permission" "sns" {
+  statement_id  = "AllowSNSInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.severity.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.drift.arn
+}
