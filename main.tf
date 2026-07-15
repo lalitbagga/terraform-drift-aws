@@ -50,7 +50,7 @@ resource "aws_iam_role_policy" "codebuild" {
         ]
         Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
       },
-    {
+      {
         # Publish drift alerts to SNS
         Effect = "Allow"
         Action = [
@@ -78,13 +78,13 @@ resource "aws_codebuild_project" "drift" {
     image        = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
     type         = "LINUX_CONTAINER"
 
-    environment_variable {         
-        name  = "SNS_TOPIC_ARN"
-        value = aws_sns_topic.drift.arn
+    environment_variable {
+      name  = "SNS_TOPIC_ARN"
+      value = aws_sns_topic.drift.arn
     }
   }
 
- 
+
 
   source {
     type      = "NO_SOURCE"

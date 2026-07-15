@@ -8,5 +8,5 @@ variable "aws_region" {
 variable "alert_email" {
   description = "Email address to receive drift alerts"
   type        = string
-  default     = ""  
+  default     = ""
 }
