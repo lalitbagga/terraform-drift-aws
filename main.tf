@@ -33,22 +33,21 @@ resource "aws_iam_role_policy" "codebuild" {
         ]
       },
       {
-        # Write build logs to CloudWatch
+        # CloudWatch Logs permissions
         Effect = "Allow"
         Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
+          "logs:*",
         ]
         Resource = "arn:aws:logs:${var.aws_region}:*:*"
       },
       {
-        # Read SSM parameters (for SSH keys, etc.)
+        # SSM parameters
         Effect = "Allow"
         Action = [
           "ssm:GetParameter",
+          "ssm:DescribeParameters",
         ]
-        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
+        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/*"
       },
       {
         # Publish drift alerts to SNS
@@ -247,22 +246,20 @@ resource "aws_iam_role_policy" "remediation" {
           ]
         },
         {
-           # Write build logs to CloudWatch
+           # CloudWatch Logs permissions
           Effect = "Allow"
           Action = [
-            "logs:CreateLogGroup",
-            "logs:CreateLogStream",
-            "logs:PutLogEvents",
+            "logs:*",
           ]
           Resource = "arn:aws:logs:${var.aws_region}:*:*"
         },
-         # Read SSM parameters
+         # SSM parameters
         {
           Effect = "Allow"
           Action = [
-            "ssm:GetParameter",
+            "ssm:*",
           ]
-          Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
+          Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/*"
         },
         {
           # IAM permissions for creating/modifying roles and policies
