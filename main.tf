@@ -269,7 +269,7 @@ resource "aws_iam_role_policy" "remediation" {
           Action = [
             "ssm:*",
           ]
-          Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/*"
+          Resource = "*"
         },
         {
           # IAM permissions for creating/modifying roles and policies
@@ -277,6 +277,62 @@ resource "aws_iam_role_policy" "remediation" {
           Effect = "Allow"
           Action = [
             "iam:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # EC2 permissions for VPC, instances, security groups, etc.
+          Effect = "Allow"
+          Action = [
+            "ec2:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # ECR permissions for repositories
+          Effect = "Allow"
+          Action = [
+            "ecr:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # ECS permissions for clusters, services, task definitions
+          Effect = "Allow"
+          Action = [
+            "ecs:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # RDS permissions for database instances
+          Effect = "Allow"
+          Action = [
+            "rds:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # Elastic Load Balancing permissions
+          Effect = "Allow"
+          Action = [
+            "elasticloadbalancing:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # Auto Scaling permissions
+          Effect = "Allow"
+          Action = [
+            "autoscaling:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # CloudWatch permissions (metrics, alarms)
+          Effect = "Allow"
+          Action = [
+            "cloudwatch:*",
           ]
           Resource = "*"
         },
