@@ -53,11 +53,9 @@ resource "aws_iam_role_policy" "codebuild" {
         # IAM read permissions (for terraform plan)
         Effect = "Allow"
         Action = [
-          "iam:GetRole",
-          "iam:GetPolicy",
-          "iam:ListAttachedRolePolicies",
-          "iam:ListRolePolicies",
-          "iam:GetRolePolicy",
+          "iam:Get*",
+          "iam:List*",
+          "iam:PassRole",
         ]
         Resource = "*"
       },
