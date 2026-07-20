@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.10.0/terraform_1.10.0_linux_amd64.zip
+      - unzip terraform.zip -d /usr/local/bin
+  pre_build:
+    commands:
+      - git clone https://github.com/lalitbagga/Three-Tier-Infra.git /tmp/Three-Tier-Infra
+      - cd /tmp/Three-Tier-Infra
+      - terraform init
+  build:
+    commands:
+      - cd /tmp/Three-Tier-Infra
+      - echo "Running terraform apply to remediate drift..."
+      - terraform apply -auto-approve -lock=false
+      - echo "Remediation complete."

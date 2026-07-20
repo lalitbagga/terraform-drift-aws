@@ -1,6 +1,9 @@
 import json
 import os
 from datetime import datetime, timezone
+import boto3
+
+codebuild = boto3.client("codebuild")
 
 # Severity definitions
 HIGH_RISK_TYPES = {
@@ -88,6 +91,10 @@ def lambda_handler(event, context):
 
         # Log the classified drift
         print(f"Drift classification: {json.dumps(summary, indent=2)}")
+
+        if classified["LOW"]:
+            print(f"Triggering remediation for {len(classified['LOW'])} LOW severity changes")
+            codebuild.start_build(projectName=os.environ.get("REMEDIATION_PROJECT_NAME", "terraform-drift-remediation"))
 
         # TODO Phase 3: Auto-remediate HIGH severity changes
         # TODO Phase 3: Alert on MEDIUM severity changes
