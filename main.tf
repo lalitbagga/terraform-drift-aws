@@ -50,6 +50,18 @@ resource "aws_iam_role_policy" "codebuild" {
         Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/*"
       },
       {
+        # IAM read permissions (for terraform plan)
+        Effect = "Allow"
+        Action = [
+          "iam:GetRole",
+          "iam:GetPolicy",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy",
+        ]
+        Resource = "*"
+      },
+      {
         # Publish drift alerts to SNS
         Effect = "Allow"
         Action = [
