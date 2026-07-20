@@ -44,10 +44,9 @@ resource "aws_iam_role_policy" "codebuild" {
         # SSM parameters
         Effect = "Allow"
         Action = [
-          "ssm:GetParameter",
-          "ssm:DescribeParameters",
+          "ssm:*",
         ]
-        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/*"
+        Resource = "*"
       },
       {
         # IAM read permissions (for terraform plan)
