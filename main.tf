@@ -264,6 +264,15 @@ resource "aws_iam_role_policy" "remediation" {
           ]
           Resource = "arn:aws:ssm:${var.aws_region}:*:parameter/threeTier/*"
         },
+        {
+          # IAM permissions for creating/modifying roles and policies
+          # TODO: Scope down to specific resources for production
+          Effect = "Allow"
+          Action = [
+            "iam:*",
+          ]
+          Resource = "*"
+        },
       ]
     })
 }
