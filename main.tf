@@ -59,6 +59,98 @@ resource "aws_iam_role_policy" "codebuild" {
         Resource = "*"
       },
       {
+        # EC2 read permissions
+        Effect = "Allow"
+        Action = [
+          "ec2:Describe*",
+        ]
+        Resource = "*"
+      },
+      {
+        # ECR read permissions
+        Effect = "Allow"
+        Action = [
+          "ecr:Describe*",
+          "ecr:Get*",
+          "ecr:List*",
+        ]
+        Resource = "*"
+      },
+      {
+        # ECS read permissions
+        Effect = "Allow"
+        Action = [
+          "ecs:Describe*",
+          "ecs:List*",
+        ]
+        Resource = "*"
+      },
+      {
+        # RDS read permissions
+        Effect = "Allow"
+        Action = [
+          "rds:Describe*",
+          "rds:List*",
+        ]
+        Resource = "*"
+      },
+      {
+        # ELB read permissions
+        Effect = "Allow"
+        Action = [
+          "elasticloadbalancing:Describe*",
+        ]
+        Resource = "*"
+      },
+      {
+        # CloudFront read permissions
+        Effect = "Allow"
+        Action = [
+          "cloudfront:Get*",
+          "cloudfront:Describe*",
+          "cloudfront:List*",
+        ]
+        Resource = "*"
+      },
+      {
+        # Lambda read permissions
+        Effect = "Allow"
+        Action = [
+          "lambda:Get*",
+          "lambda:List*",
+        ]
+        Resource = "*"
+      },
+      {
+        # S3 bucket policy read permissions
+        Effect = "Allow"
+        Action = [
+          "s3:GetBucketPolicy",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCors",
+          "s3:GetBucketLocation",
+          "s3:GetBucketLogging",
+          "s3:GetBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketWebsite",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetBucketPublicAccessBlock",
+        ]
+        Resource = "arn:aws:s3:::*"
+      },
+      {
+        # Cognito read permissions
+        Effect = "Allow"
+        Action = [
+          "cognito-idp:Describe*",
+          "cognito-idp:Get*",
+          "cognito-idp:List*",
+        ]
+        Resource = "*"
+      },
+      {
         # Publish drift alerts to SNS
         Effect = "Allow"
         Action = [
@@ -332,6 +424,38 @@ resource "aws_iam_role_policy" "remediation" {
           Effect = "Allow"
           Action = [
             "cloudwatch:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # CloudFront permissions
+          Effect = "Allow"
+          Action = [
+            "cloudfront:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # Lambda permissions
+          Effect = "Allow"
+          Action = [
+            "lambda:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # S3 permissions
+          Effect = "Allow"
+          Action = [
+            "s3:*",
+          ]
+          Resource = "*"
+        },
+        {
+          # Cognito permissions
+          Effect = "Allow"
+          Action = [
+            "cognito-idp:*",
           ]
           Resource = "*"
         },
