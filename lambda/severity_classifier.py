@@ -37,11 +37,16 @@ MEDIUM_RISK_TYPES = {
 def classify_change(resource_type, actions):
     """Classify a single resource change by severity."""
     if resource_type in HIGH_RISK_TYPES:
+        # Security/IAM changes are always HIGH
         return "HIGH"
     elif resource_type in MEDIUM_RISK_TYPES:
-        # Delete or replace is more concerning than create
+        # Delete or replace is more concerning than update
         if "delete" in actions or "replace" in actions:
             return "HIGH"
+        # Updates on MEDIUM resources are usually LOW (tags, minor config)
+        elif "update" in actions:
+            return "LOW"
+        # Create is still MEDIUM
         return "MEDIUM"
     else:
         return "LOW"
