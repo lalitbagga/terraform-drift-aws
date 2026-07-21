@@ -9,6 +9,8 @@ codebuild = boto3.client("codebuild")
 HIGH_RISK_TYPES = {
     "aws_security_group",
     "aws_security_group_rule",
+    "aws_vpc_security_group_ingress_rule",
+    "aws_vpc_security_group_egress_rule",
     "aws_iam_role",
     "aws_iam_policy",
     "aws_iam_role_policy",
@@ -92,9 +94,18 @@ def lambda_handler(event, context):
         # Log the classified drift
         print(f"Drift classification: {json.dumps(summary, indent=2)}")
 
-        if classified["LOW"]:
-            print(f"Triggering remediation for {len(classified['LOW'])} LOW severity changes")
+        # Only auto-remediate LOW severity changes that are NOT deletions
+        # Deletions should be reviewed manually
+        low_changes_to_remediate = [
+            change for change in classified["LOW"]
+            if "delete" not in change.get("actions", [])
+        ]
+
+        if low_changes_to_remediate:
+            print(f"Triggering remediation for {len(low_changes_to_remediate)} LOW severity changes (excluding deletions)")
             codebuild.start_build(projectName=os.environ.get("REMEDIATION_PROJECT_NAME", "terraform-drift-remediation"))
+        else:
+            print("No LOW severity changes to auto-remediate (deletions require manual review)")
 
         # TODO Phase 3: Auto-remediate HIGH severity changes
         # TODO Phase 3: Alert on MEDIUM severity changes
